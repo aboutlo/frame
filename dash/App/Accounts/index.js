@@ -4,7 +4,7 @@ import Restore from 'react-restore'
 import link from '../../../resources/link'
 import svg from '../../../resources/svg'
 
-import Signer from '../Signer'
+import Signer, { Types } from "../Signer";
 
 import AddHardware from './Add/AddHardware'
 import AddHardwareLattice from './Add/AddHardwareLattice'
@@ -13,6 +13,8 @@ import AddPhrase from './Add/AddPhrase'
 import AddRing from './Add/AddRing'
 import AddKeystore from './Add/AddKeystore'
 import AddAddress from './Add/AddAddress'
+import AddHardwareKeystone from './Add/AddHardwareKeystone'
+
 
 class AddAccounts extends React.Component {
   constructor(...args) {
@@ -63,6 +65,13 @@ class AddAccounts extends React.Component {
       </div>
     )
   }
+  renderAddKeystone () {
+    return (
+        <div className='addAccounts cardShow'>
+          <AddHardwareKeystone type={Types.Keystone} close={this.props.close} />
+        </div>
+    )
+  }
   renderAddLattice() {
     return (
       <div className='addAccounts cardShow'>
@@ -109,6 +118,10 @@ class AddAccounts extends React.Component {
           <div className='accountTypeSelectIcon'>{svg.aragon(30)}</div>
           <div className='accountTypeSelectIcon'>{'Aragon DAO'}</div>
         </div>
+        <div className='accountTypeSelect' onClick={() => this.createNewAccount(Types.Keystone)}>
+          <div className='accountTypeSelectIcon'>{svg.keystone(30)}</div>
+          <div className='accountTypeSelectIcon'>{'Keystone Device'}</div>
+        </div>
         {/* <div className='accountTypeSelect' onClick={() => this.setState({ view: 'gnosis' })}>Gnosis Safe</div> */}
         <div className='accountTypeSelect' onClick={() => this.createNewAccount('seed')}>
           <div className='accountTypeSelectIcon'>{svg.seedling(23)}</div>
@@ -138,6 +151,8 @@ class AddAccounts extends React.Component {
       return this.renderAddLedger()
     } else if (newAccountType === 'trezor') {
       return this.renderAddTrezor()
+    } else if (newAccountType === Types.Keystone)  {
+      return this.renderAddKeystone()
     } else if (newAccountType === 'lattice') {
       return this.renderAddLattice()
     } else if (newAccountType === 'seed') {
@@ -166,7 +181,7 @@ class Dash extends React.Component {
     const hardwareSigners = Object.keys(this.store('main.signers'))
       .map((s) => {
         const signer = this.store('main.signers', s)
-        if (signer.type === 'ledger' || signer.type === 'trezor' || signer.type === 'lattice') {
+        if (signer.type === 'ledger' || signer.type === 'trezor' || signer.type === 'lattice' || signer.type === 'keystone') {
           return signer
         } else {
           return false
@@ -186,17 +201,15 @@ class Dash extends React.Component {
 
     const { showAddAccounts } = this.props.data
     return showAddAccounts ? (
-      <AddAccounts
-        close={() =>
-          link.send('tray:action', 'navDash', { view: 'accounts', data: { showAddAccounts: false } })
-        }
-        {...this.props}
-      />
-    ) : (
-      <div className='cardShow'>
-        <div className='signers'>
-          <div className='signersMid'>
-            {/* <div className='signersHeader'>
+        <AddAccounts
+          close={() => link.send('tray:action', 'navDash', { view: 'accounts', data: { showAddAccounts: false } })}
+          {...this.props}
+        />
+       ) : (
+        <div className='cardShow'>
+          <div className='signers'>
+            <div className='signersMid'>
+              {/* <div className='signersHeader'>
                 Your Hardware Signers
               </div> */}
             <div className='signersList'>

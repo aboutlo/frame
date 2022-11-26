@@ -1,0 +1,43 @@
+.requestQRModal, .errorModal
+  position relative
+  display flex
+  flex-direction column
+  width 100%
+  height 100%
+  justify-content center
+  align-items center
+  z-index: 10000
+
+  .requestQR, .errorMessage
+    height 200px
+    display flex
+    flex-direction column
+    justify-content center
+    align-items center
+
+  .modalButton
+    margin: 30px 0;
+
+    .confirm, .cancel
+      margin: 0 10px;
+      font-size: 14px;
+      background-color: var(--thin);
+      border-bottom: 2px solid var(--ghostZ);
+      box-shadow: 0 2px 4px var(--ghostY);
+      cursor: pointer;
+      width 200px;
+      height: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      letter-spacing: 2px;
+      font-weight: 500;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-transform: uppercase;
+
+    .confirm:hover, .cancel:hover
+      background-color: var(--outerspace01);
+
+    .disabled
+      background-color: var(--outerspace01);

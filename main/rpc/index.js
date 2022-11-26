@@ -1,4 +1,4 @@
-const { ipcMain, dialog } = require('electron')
+const { ipcMain, dialog, systemPreferences} = require('electron')
 const fs = require('fs')
 import { isAddress } from '@ethersproject/address'
 const { randomBytes } = require('crypto')
@@ -36,6 +36,24 @@ const rpc = {
       cb(new Error('No frameId set for this window'))
     }
   },
+
+  askCameraPermission: cb => {
+    console.log('askCameraPermission...')
+    const mediaAccessStatus = systemPreferences.getMediaAccessStatus('camera')
+    console.log('askCameraPermission', {mediaAccessStatus})
+    if(mediaAccessStatus === "granted"){
+      return cb(true)
+    }
+    systemPreferences.askForMediaAccess("camera")
+        .then(access => {
+          cb(access)
+        })
+        .catch((e) => {
+          console.log('askCameraPermission failed:',e.message)
+          cb(false)
+        })
+  },
+
   signTransaction: accounts.signTransaction,
   signMessage: accounts.signMessage,
   getAccounts: accounts.getAccounts,
@@ -114,6 +132,21 @@ const rpc = {
       }
     }
   },
+
+  createKeystone (ur, cb) {
+    store.syncKeystone(ur)
+    cb()
+  },
+  submitKeystoneSignature(signature, cb) {
+    store.setKeystoneSignature(signature)
+    cb()
+  },
+  cancelKeystoneRequestSignature(signRequestId, cb) {
+    console.log('cancelKeystoneRequestSignature:', {signRequestId})
+    store.resetKeystoneSignRequest(signRequestId)
+    cb()
+  },
+
   launchStatus: launch.status,
   providerSend: (payload, cb) => provider.send(payload, cb),
   connectionStatus: (cb) => {
