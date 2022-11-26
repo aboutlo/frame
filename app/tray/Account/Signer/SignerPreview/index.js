@@ -64,6 +64,13 @@ class Signer extends React.Component {
           <div>{'GridPlus'}</div>
         </div>
       )
+    } else if (type === 'keystone') {
+      return (
+          <div className='moduleItemSignerType'>
+            <div className='moduleItemIcon'>{svg.keystone(16)}</div>
+            <div>{'Keystone'}</div>
+          </div>
+      )
     } else if (type === 'ledger') {
       return (
         <div className='moduleItemSignerType'>

@@ -123,7 +123,14 @@ function initTrayWindow() {
   })
 
   windows.tray.on('closed', () => delete windows.tray)
-  windows.tray.webContents.session.setPermissionRequestHandler((webContents, permission, res) => res(false))
+  windows.tray.webContents.session.setPermissionRequestHandler((webContents, permission, res) => {
+    console.log({permission})
+    const page = webContents.getURL().split('/').pop()
+    if ((page === 'dash.html' || page === 'tray.html') && permission === 'media') {
+      return res(true)
+    }
+    res(false)
+  })
   windows.tray.setResizable(false)
   windows.tray.setMovable(false)
   windows.tray.setSize(0, 0)

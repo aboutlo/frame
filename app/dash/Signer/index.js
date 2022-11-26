@@ -7,6 +7,13 @@ import { capitalize, getAddress } from '../../../resources/utils'
 import { isHardwareSigner, getSignerDisplayType } from '../../../resources/domain/signer'
 
 import SignerStatus from './SignerStatus'
+// TODO  rename as HardwareSigner
+export const Types = {
+  Lattice: "lattice",
+  Trezor: "trezor",
+  Keystone: "keystone",
+  Ledger: "ledger"
+};
 
 function isLoading(status = '') {
   const statusToCheck = status.toLowerCase()
@@ -307,6 +314,8 @@ class Signer extends React.Component {
                   return <div className='signerIconWrap signerIconHardware'>{svg.ledger(20)}</div>
                 if (type === 'trezor')
                   return <div className='signerIconWrap signerIconHardware'>{svg.trezor(20)}</div>
+                if (type === 'keystone')
+                  return <div className='signerIconWrap signerIconHardware'>{svg.keystone(20)}</div>
                 if (type === 'seed' || type === 'ring')
                   return <div className='signerIconWrap signerIconHot'>{svg.flame(23)}</div>
                 if (type === 'lattice')

@@ -1,5 +1,12 @@
 import React from 'react'
 import Restore from 'react-restore'
+import {
+  Cluster,
+  ClusterBox,
+  ClusterColumn,
+  ClusterRow,
+  ClusterValue
+} from '../../../../../resources/Components/Cluster'
 
 // New Tx
 import TxMain from './TxMainNew'
@@ -11,6 +18,7 @@ import AdjustFee from './AdjustFee'
 import ViewData from './ViewData'
 import TokenSpend from './TokenSpend'
 import link from '../../../../../resources/link'
+import QRSignModal from '../../../../../resources/Components/QRSignModal'
 
 class TransactionRequest extends React.Component {
   constructor(props, context) {
@@ -64,6 +72,9 @@ class TransactionRequest extends React.Component {
     const req = this.store('main.accounts', accountId, 'requests', handlerId)
     if (!req) return null
 
+    const activeAccount = Object.values(this.store('main.accounts')).find(account => account.active).address
+    const signRequests = this.store('main.keystone.signRequests')
+    const signRequest = signRequests.find(request => request.address === activeAccount)
     let requestClass = 'signerRequest cardShow'
     const success = req.status === 'confirming' || req.status === 'confirmed'
     const error = req.status === 'error' || req.status === 'declined'
@@ -83,9 +94,9 @@ class TransactionRequest extends React.Component {
         {req.type === 'transaction' ? (
           <div className='approveTransaction'>
             <div className='approveTransactionPayload'>
-              <div className='_txBody'>
-                <TxMain i={0} {...this.props} req={req} chain={chain} />
-                <TxValue i={1} {...this.props} req={req} chain={chain} />
+              {status !== 'pending' &&  <div className="_txBody">
+                <TxMain i={0} {...this.props} req={req} chain={chain}/>
+                <TxValue i={1} {...this.props} req={req} chain={chain}/>
                 {recognizedActions.map((action, i) => {
                   return (
                     <TxAction
@@ -98,9 +109,32 @@ class TransactionRequest extends React.Component {
                     />
                   )
                 })}
-                <TxRecipient i={3 + recognizedActions.length} {...this.props} req={req} />
-                <TxFee i={4 + recognizedActions.length} {...this.props} req={req} />
-              </div>
+                <TxRecipient i={3 + recognizedActions.length} {...this.props} req={req}/>
+                <TxFee i={4 + recognizedActions.length} {...this.props} req={req}/>
+              </div>}
+              {status === 'pending' && signRequest &&
+                <ClusterBox title="QR Signature" style={{width: '100%', }}>
+                  <Cluster>
+                    <ClusterRow>
+                      <ClusterColumn>
+                        <ClusterValue pointerEvents={true} style={{padding: '20px'}}>
+                          <QRSignModal
+                              showModal={status === 'pending' && signRequest}
+                              signRequest={signRequest}
+                              submitSignature={(signature) => {
+                                link.rpc('submitKeystoneSignature', signature, () => {
+                                })
+                              }}
+                              cancelRequestSignature={() => {
+                                // moved to the global cancel button
+                              }}
+                          />
+                        </ClusterValue>
+                      </ClusterColumn>
+
+                    </ClusterRow>
+                  </Cluster>
+                </ClusterBox>}
             </div>
           </div>
         ) : (

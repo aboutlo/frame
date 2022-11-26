@@ -2,6 +2,15 @@ import React from 'react'
 import Restore from 'react-restore'
 import { isHexString } from '@ethersproject/bytes'
 import { stripHexPrefix } from './../../../../../resources/utils'
+import {
+  Cluster,
+  ClusterBox,
+  ClusterColumn,
+  ClusterRow,
+  ClusterValue
+} from '../../../../../resources/Components/Cluster'
+import link from '../../../../../resources/link'
+import QRSignModal from '../../../../../resources/Components/QRSignModal'
 
 function decodeMessage(rawMessage) {
   if (isHexString(rawMessage)) {
@@ -51,6 +60,10 @@ class TransactionRequest extends React.Component {
 
     const message = decodeMessage(payload.params[1])
 
+    const activeAccount = Object.values(this.store('main.accounts')).find(account => account.active).address
+    const keystoneSignRequests = this.store('main.keystone.signRequests')
+    const keystoneSignRequest = keystoneSignRequests.find(request => request.address === activeAccount)
+
     let requestClass = 'signerRequest'
     if (status === 'success') requestClass += ' signerRequestSuccess'
     if (status === 'declined') requestClass += ' signerRequestDeclined'
@@ -61,7 +74,30 @@ class TransactionRequest extends React.Component {
       <div key={this.props.req.id || this.props.req.handlerId} className={requestClass}>
         {type === 'sign' ? (
           <div className='approveRequest'>
-            <div className='approveTransactionPayload'>{this.renderMessage(message)}</div>
+            <div className="approveTransactionPayload">{status !== 'pending' && keystoneSignRequest === undefined ? this.renderMessage(message) :
+                  <ClusterBox title="QR Signature" style={{width: '100%',}}>
+                    <Cluster>
+                      <ClusterRow>
+                        <ClusterColumn>
+                          <ClusterValue pointerEvents={true} style={{padding: '20px'}}>
+                            <QRSignModal
+                                showModal={status === 'pending' && keystoneSignRequest}
+                                signRequest={keystoneSignRequest}
+                                submitSignature={(signature) => {
+                                  link.rpc('submitKeystoneSignature', signature, () => {
+                                  })
+                                }}
+                                cancelRequestSignature={() => {
+                                  // moved to the global cancel button
+                                }}
+                            />
+                          </ClusterValue>
+                        </ClusterColumn>
+
+                      </ClusterRow>
+                    </Cluster>
+                  </ClusterBox>}
+            </div>
           </div>
         ) : (
           <div className='unknownType'>{'Unknown: ' + this.props.req.type}</div>
