@@ -7,6 +7,7 @@ import { SignerAdapter } from './adapters'
 import LedgerAdapter from './ledger/adapter'
 import TrezorAdapter from './trezor/adapter'
 import LatticeAdapter from './lattice/adapter'
+import KeystoneAdapter from "./keystone/adapter";
 
 import hot from './hot'
 import RingSigner from './hot/RingSigner'
@@ -14,7 +15,12 @@ import HotSigner from './hot/HotSigner'
 
 import store from '../store'
 
-const registeredAdapters = [new LedgerAdapter(), new TrezorAdapter(), new LatticeAdapter()]
+const registeredAdapters = [
+  new LedgerAdapter(),
+  new TrezorAdapter(),
+  new LatticeAdapter(),
+  new KeystoneAdapter()
+]
 
 interface AdapterSpec {
   [key: string]: {

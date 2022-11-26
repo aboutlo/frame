@@ -29,6 +29,13 @@ class RequestCommand extends React.Component {
   }
 
   decline(req) {
+    const activeAccount = Object.values(this.store('main.accounts')).find(account => account.active).address
+    const keystoneSignRequests = this.store('main.keystone.signRequests')
+    const keystoneSignRequest = keystoneSignRequests.find(request => request.address === activeAccount)
+    console.log('decline:', {keystoneSignRequest})
+    if (keystoneSignRequest) {
+      link.rpc('cancelKeystoneRequestSignature', keystoneSignRequest.request.requestId, () => {})
+    }
     link.rpc('declineRequest', req, () => {}) // Move to link.send
   }
 

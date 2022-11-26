@@ -183,6 +183,29 @@ module.exports = {
       })
     }
   },
+  syncKeystone: (u, value) => {
+    console.log("syncKeystone:", value);
+    u("main.keystone.devices", (prev = []) => [...prev, value]);
+  },
+  updateKeystone: (u, value) => {
+    u("main.keystone.devices", () => value);
+  },
+  addKeystoneSignRequest: (u, value) => {
+    u("main.keystone.signRequests", (prev) => {
+      // console.log("addKeystoneSignRequest:", { u, value, prev });
+      return [...prev, value];
+    });
+  },
+  resetKeystoneSignRequest: (u, signRequestId) => {
+    u("main.keystone.signRequests", (prev) => {
+      // console.log("resetKeystoneSignRequest:", { prev });
+      return prev.filter(({ request }) => request.requestId !== signRequestId);
+    });
+    u("main.keystone.signature", () => null);
+  },
+  setKeystoneSignature: (u, value) => {
+    u("main.keystone.signature", () => value);
+  },
   setLatticeAccountLimit: (u, limit) => {
     u('main.latticeSettings.accountLimit', () => limit)
   },
