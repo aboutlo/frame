@@ -2,6 +2,7 @@ import React from 'react'
 import Restore from 'react-restore'
 
 import link from '../../../../../../resources/link'
+import QRSignModal from '../../QRSignModal'
 
 // New Tx
 import TxMain from './TxMain'
