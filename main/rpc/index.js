@@ -138,13 +138,11 @@ const rpc = {
     cb()
   },
   submitKeystoneSignature(signature, cb) {
-    console.log('submitKeystoneSignature:', {signature})
-    //TODO LS submit the transaction
     store.setKeystoneSignature(signature)
     cb()
   },
   cancelKeystoneRequestSignature(signRequestId, cb) {
-    console.log('cancelKeystoneRequestSignature:', {signature})
+    console.log('cancelKeystoneRequestSignature:', {signRequestId})
     store.resetKeystoneSignRequest(signRequestId)
     cb()
   },

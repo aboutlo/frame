@@ -237,9 +237,10 @@ module.exports = {
     });
   },
   resetKeystoneSignRequest: (u, signRequestId) => {
-    u("main.keystone.signRequests", (prev) =>
-      prev.filter(({ request }) => request.requestId !== signRequestId)
-    );
+    u("main.keystone.signRequests", (prev) => {
+      console.log("resetKeystoneSignRequest:", { prev });
+      return prev.filter(({ request }) => request.requestId !== signRequestId);
+    });
     u("main.keystone.signature", () => null);
   },
   setKeystoneSignature: (u, value) => {

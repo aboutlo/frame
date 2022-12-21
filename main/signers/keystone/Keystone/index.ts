@@ -40,7 +40,7 @@ export default class Keystone extends Signer {
     this.emit("close");
     this.removeAllListeners();
 
-    super.close();
+    //super.close(); // avoid to receive the warning
   }
 
   async deriveAddresses() {

@@ -79,7 +79,7 @@ export class KeystoneInteractionProvider
 
   submitSignature = (requestId: string, cbor: string) => {
     const msg = `${requestId}-signed`;
-    console.log("submitSignatureL", { msg });
+    console.log("submitSignature", { msg });
     this.emit(msg, cbor);
   };
 }

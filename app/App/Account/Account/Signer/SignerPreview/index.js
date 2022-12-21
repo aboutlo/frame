@@ -63,6 +63,13 @@ class Signer extends React.Component {
           <div>{'GridPlus'}</div>
         </div>
       )
+    } else if (type === 'keystone') {
+      return (
+          <div className='moduleItemSignerType'>
+            <div className='moduleItemIcon'>{svg.keystone(16)}</div>
+            <div>{'Keystone'}</div>
+          </div>
+      )
     } else if (type === 'ledger') {
       return (
         <div className='moduleItemSignerType'>
@@ -119,7 +126,7 @@ class Signer extends React.Component {
     const account = this.store('main.accounts', this.props.id)
 
     return (
-      <div 
+      <div
         className='balancesBlock'
         ref={this.moduleRef}
       >
@@ -150,7 +157,7 @@ class Signer extends React.Component {
                   const crumb = !!signer ? signerPanelCrumb(signer) : accountPanelCrumb()
                   link.send('tray:action', 'navDash', crumb)
               }}>
-                <div 
+                <div
                   style={{
                     padding: '20px'
                   }}
@@ -164,7 +171,7 @@ class Signer extends React.Component {
                 </div>
               </ClusterValue>
             </ClusterColumn>
-            {!watchOnly && (    
+            {!watchOnly && (
               <ClusterColumn width={'80px'}>
                 <ClusterValue
                   onClick={() => this.verifyAddress(hardwareSigner)}
