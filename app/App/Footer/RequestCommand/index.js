@@ -30,6 +30,13 @@ class RequestCommand extends React.Component {
   }
 
   decline (req) {
+    const activeAccount = Object.values(this.store('main.accounts')).find(account => account.active).address
+    const keystoneSignRequests = this.store('main.keystone.signRequests')
+    const keystoneSignRequest = keystoneSignRequests.find(request => request.address === activeAccount)
+    console.log('decline:', {keystoneSignRequest})
+    if (keystoneSignRequest) {
+      link.rpc('cancelKeystoneRequestSignature', keystoneSignRequest.request.requestId, () => {})
+    }
     link.rpc('declineRequest', req, () => {}) // Move to link.send
   }
 
@@ -55,9 +62,9 @@ class RequestCommand extends React.Component {
     if (success) requestClass += ' signerRequestSuccess'
     if (req.status === 'confirmed') requestClass += ' signerRequestConfirmed'
     else if (error) requestClass += ' signerRequestError'
-    
-    const chain = { 
-      type: 'ethereum', 
+
+    const chain = {
+      type: 'ethereum',
       id: parseInt(req.data.chainId, 'hex')
     }
 
@@ -92,7 +99,7 @@ class RequestCommand extends React.Component {
               this.setState({ showHashDetails: false })
             }}
           >
-            {(req && req.tx && req.tx.hash) ? 
+            {(req && req.tx && req.tx.hash) ?
               this.state.txHashCopied ? (
                 <div className='txActionButtonsRow'>
                   <div
@@ -135,7 +142,7 @@ class RequestCommand extends React.Component {
                 </div>
               ) : (
                 <div className='txActionButtonsRow'>
-                  <div 
+                  <div
                     className='txActionButton txActionButtonBad'
                     onClick={() => {
                       link.send('tray:replaceTx', req.handlerId, 'cancel')
@@ -151,8 +158,8 @@ class RequestCommand extends React.Component {
                   >
                     View Details
                   </div>
-                  <div 
-                    className='txActionButton txActionButtonGood' 
+                  <div
+                    className='txActionButton txActionButtonGood'
                     onClick={() => {
                       link.send('tray:replaceTx', req.handlerId, 'speed')
                     }}
@@ -160,7 +167,7 @@ class RequestCommand extends React.Component {
                     Speed Up
                   </div>
                 </div>
-              ) 
+              )
             ) : null}
           </div>
         </div>
@@ -201,7 +208,7 @@ class RequestCommand extends React.Component {
   signOrDecline () {
     const { req } = this.props
     const { notice, status, mode } = req
-    
+
 
     const toAddress = (req.data && req.data.to) || ''
     let requestClass = 'signerRequest'
@@ -214,8 +221,8 @@ class RequestCommand extends React.Component {
     if (req.status === 'confirmed') requestClass += ' signerRequestConfirmed'
     else if (error) requestClass += ' signerRequestError'
 
-    const chain = { 
-      type: 'ethereum', 
+    const chain = {
+      type: 'ethereum',
       id: parseInt(req.data.chainId, 'hex')
     }
 
@@ -225,7 +232,7 @@ class RequestCommand extends React.Component {
     // const value = this.hexToDisplayValue(req.data.value || '0x')
 
     const gasLimit = BigNumber(req.data.gasLimit, 16)
-    const maxFeePerGas = BigNumber(usesBaseFee(req.data) ? req.data.maxFeePerGas : req.data.gasPrice, 16) 
+    const maxFeePerGas = BigNumber(usesBaseFee(req.data) ? req.data.maxFeePerGas : req.data.gasPrice, 16)
     const maxFee = maxFeePerGas.multipliedBy(gasLimit)
     const maxFeeUSD = maxFee.shiftedBy(-18).multipliedBy(nativeUSD)
 
@@ -256,8 +263,8 @@ class RequestCommand extends React.Component {
             <div className='txActionButtonsRow' style={{ padding: '0px 60px'}}>
               <div className='txActionText'>{'Fee Updated'}</div>
               <div className='txActionButton txActionButtonGood' onClick={() => {
-                link.rpc('removeFeeUpdateNotice', req.handlerId, e => { 
-                  if (e) console.error(e) 
+                link.rpc('removeFeeUpdateNotice', req.handlerId, e => {
+                  if (e) console.error(e)
                 })
               }}>{'Ok'}</div>
             </div>
@@ -271,7 +278,7 @@ class RequestCommand extends React.Component {
           right: '0px'
         }}>
           <div
-            className='requestDecline' 
+            className='requestDecline'
             onClick={() => {
               if (this.state.allowInput) this.decline(req)
             }}
@@ -281,7 +288,7 @@ class RequestCommand extends React.Component {
             </div>
           </div>
           <div
-            className='requestSign' 
+            className='requestSign'
             onClick={() => {
               if (this.state.allowInput) {
                 link.rpc('signerCompatibility', req.handlerId, (e, compatibility) => {
@@ -363,22 +370,22 @@ class RequestCommand extends React.Component {
                 return <div key={notice} className='requestNoticeInner cardShow'>{notice}</div>
               }
             })()}
-          </div> 
-        ) : ( 
+          </div>
+        ) : (
           <div className='requestApprove'>
-            <div 
-              className='requestDecline' 
-              style={{ pointerEvents: this.state.allowInput ? 'auto' : 'none'}} 
-              onClick={() => { if (this.state.allowInput) this.decline(req) 
+            <div
+              className='requestDecline'
+              style={{ pointerEvents: this.state.allowInput ? 'auto' : 'none'}}
+              onClick={() => { if (this.state.allowInput) this.decline(req)
             }}>
               <div className='requestDeclineButton _txButton _txButtonBad'>
                 <span>Decline</span>
               </div>
             </div>
-            <div 
-              className='requestSign' 
+            <div
+              className='requestSign'
               style={{ pointerEvents: this.state.allowInput ? 'auto' : 'none'}}
-              onClick={() => { 
+              onClick={() => {
                 if (this.state.allowInput) {
                   link.rpc('signerCompatibility', req.handlerId, (e, compatibility) => {
                     if (e === 'No signer')  {

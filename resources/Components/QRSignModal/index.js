@@ -64,13 +64,7 @@ const QRSignModal = ({ showModal, signRequest, submitSignature, cancelRequestSig
             setShowScanner(true)
           }}
         >
-          Get Signature
-        </div>
-        <div
-          className="cancel"
-          onMouseDown={cancelRequestSignature}
-        >
-          Cancel
+          Scan Signature
         </div>
       </div>
     </div>
