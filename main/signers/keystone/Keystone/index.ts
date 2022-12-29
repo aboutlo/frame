@@ -7,7 +7,7 @@ import { addHexPrefix } from "ethereumjs-util";
 import Signer from "../../Signer";
 import { KeystoneKeyring } from "./KeystoneKeyring";
 import chainConfig from "../../../chains/config";
-import { TransactionFactory } from "@ethereumjs/tx";
+import {TransactionFactory, TypedTransaction} from "@ethereumjs/tx";
 import log from "electron-log";
 import { TransactionData } from "../../../../resources/domain/transaction";
 import { TypedMessage } from "../../../accounts/types";
@@ -81,11 +81,10 @@ export default class Keystone extends Signer {
       parseInt(rawTx.type) === 2 ? "london" : "berlin"
     );
     const transaction = TransactionFactory.fromTxData(rawTx, { common });
-
     this.keystoneKeyring
       .signTransaction(rawTx.from!, transaction)
-      .then((signedTx) => {
-        log.info("successfully signed transaction on Keystone: ", signedTx);
+      .then((signedTx: TypedTransaction) => {
+        log.info("Successfully signed transaction on Keystone: ", signedTx.hash().toString('hex'));
 
         cb(null, addHexPrefix(signedTx.serialize().toString("hex")));
       })

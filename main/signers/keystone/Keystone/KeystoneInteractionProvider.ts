@@ -8,7 +8,6 @@ import {
   CryptoAccount,
 } from "@keystonehq/bc-ur-registry-eth";
 import store from "../../../store";
-import log from "electron-log";
 
 export interface SignRequest {
   signerId: string;
@@ -40,11 +39,8 @@ export class KeystoneInteractionProvider
   readCryptoHDKeyOrCryptoAccount = () =>
     Promise.resolve(CryptoAccount.fromCBOR(Buffer.from("", "hex")));
 
-  requestSignature = (signRequest: EthSignRequest): Promise<ETHSignature> => {
+  requestSignature = (signRequest: EthSignRequest, requestTitle?: string, requestDescription?: string): Promise<ETHSignature> => {
     return new Promise((resolve, reject) => {
-
-      // WORKAROUND patch chainId as number instead of bigint because cbor-sync does not support bigint
-      signRequest['chainId'] = Number(signRequest.getChainId())
       const ur = signRequest.toUR();
       const requestIdBuffer = signRequest.getRequestId();
       if (!requestIdBuffer) {

@@ -1,6 +1,5 @@
 import { BaseKeyring, StoredKeyring } from '@keystonehq/base-eth-keyring'
 import { KeystoneInteractionProvider } from './KeystoneInteractionProvider'
-import { TypedTransaction } from '@ethereumjs/tx'
 import log from 'electron-log'
 
 export class KeystoneKeyring extends BaseKeyring {
@@ -11,16 +10,10 @@ export class KeystoneKeyring extends BaseKeyring {
   getInteraction = (): KeystoneInteractionProvider => {
     return new KeystoneInteractionProvider()
   }
-
+  // tx should be TypedTransaction type however there are incompatible types between @ethereumjs/tx versions  in Frame and @keystonehq/base-eth-keyring
   signTransaction(address: string, tx:any): Promise<any> {
-    console.log("signTransaction", JSON.stringify(tx, (key, value) => {
-          // workaround for chain id being a BigInt instead of a BN.
-          return typeof value === 'bigint'
-              ? Number(value)
-              : value// return everything else unchanged
-        }
-    ));
-    return super.signTransaction(address, tx).catch((e) => console.log('signTransaction error', e))
+    log.info('KeystoneKeyring::signTransaction',{address,tx: tx.data.toString('hex')})
+    return super.signTransaction(address, tx)
   }
 
   submitSignature = this.getInteraction().submitSignature
